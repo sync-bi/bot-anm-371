@@ -1,0 +1,29 @@
+{
+  "name": "bot-anm-371",
+  "version": "1.0.0",
+  "description": "Bot para consultar Resolución ANM 371/2024",
+  "main": "server.js",
+  "scripts": {
+    "start": "node server.js",
+    "dev": "node server.js"
+  },
+  "dependencies": {
+    "cors": "^2.8.5",
+    "dotenv": "^16.3.1",
+    "express": "^4.18.2",
+    "open": "^9.1.0"
+  },
+  "engines": {
+    "node": ">=16.0.0"
+  },
+  "keywords": [
+    "anm",
+    "mineria",
+    "colombia",
+    "resolucion",
+    "chatbot",
+    "openai"
+  ],
+  "author": "Tu Nombre",
+  "license": "MIT"
+}

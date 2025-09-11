@@ -1,0 +1,404 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Bot Consulta Resolución ANM 371/2024</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            min-height: 100vh;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            padding: 20px;
+        }
+
+        .container {
+            background: white;
+            border-radius: 20px;
+            box-shadow: 0 20px 40px rgba(0, 0, 0, 0.1);
+            width: 100%;
+            max-width: 900px;
+            overflow: hidden;
+        }
+
+        .header {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            padding: 30px;
+            text-align: center;
+        }
+
+        .header h1 {
+            font-size: 2.2em;
+            margin-bottom: 10px;
+            font-weight: 600;
+        }
+
+        .header p {
+            opacity: 0.9;
+            font-size: 1.1em;
+        }
+
+        .chat-container {
+            height: 500px;
+            overflow-y: auto;
+            padding: 20px;
+            background: #f8f9fa;
+        }
+
+        .message {
+            margin-bottom: 20px;
+            display: flex;
+            align-items: flex-start;
+        }
+
+        .message.user {
+            justify-content: flex-end;
+        }
+
+        .message-content {
+            max-width: 80%;
+            padding: 15px 20px;
+            border-radius: 18px;
+            font-size: 16px;
+            line-height: 1.5;
+        }
+
+        .message.user .message-content {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            border-bottom-right-radius: 5px;
+        }
+
+        .message.bot .message-content {
+            background: white;
+            color: #333;
+            border: 1px solid #e0e0e0;
+            border-bottom-left-radius: 5px;
+            box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
+        }
+
+        .input-container {
+            padding: 20px;
+            background: white;
+            border-top: 1px solid #e0e0e0;
+            display: flex;
+            gap: 15px;
+        }
+
+        .input-field {
+            flex: 1;
+            padding: 15px 20px;
+            border: 2px solid #e0e0e0;
+            border-radius: 25px;
+            font-size: 16px;
+            outline: none;
+            transition: border-color 0.3s ease;
+        }
+
+        .input-field:focus {
+            border-color: #667eea;
+        }
+
+        .send-button {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            border: none;
+            padding: 15px 30px;
+            border-radius: 25px;
+            cursor: pointer;
+            font-size: 16px;
+            font-weight: 600;
+            transition: all 0.3s ease;
+            min-width: 120px;
+        }
+
+        .send-button:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 10px 20px rgba(102, 126, 234, 0.3);
+        }
+
+        .send-button:disabled {
+            opacity: 0.7;
+            cursor: not-allowed;
+            transform: none;
+        }
+
+        .typing {
+            display: none;
+            align-items: center;
+            color: #666;
+            font-style: italic;
+            margin-bottom: 20px;
+        }
+
+        .typing-dots {
+            display: inline-flex;
+            margin-left: 10px;
+        }
+
+        .typing-dots span {
+            width: 8px;
+            height: 8px;
+            background: #667eea;
+            border-radius: 50%;
+            margin: 0 2px;
+            animation: typing 1.4s infinite;
+        }
+
+        .typing-dots span:nth-child(2) {
+            animation-delay: 0.2s;
+        }
+
+        .typing-dots span:nth-child(3) {
+            animation-delay: 0.4s;
+        }
+
+        @keyframes typing {
+            0%, 60%, 100% {
+                transform: translateY(0);
+            }
+            30% {
+                transform: translateY(-10px);
+            }
+        }
+
+        .examples {
+            padding: 20px;
+            background: #f8f9fa;
+            border-top: 1px solid #e0e0e0;
+            max-height: 200px;
+            overflow-y: auto;
+        }
+
+        .examples h3 {
+            color: #333;
+            margin-bottom: 15px;
+            font-size: 18px;
+        }
+
+        .example-question {
+            background: white;
+            border: 1px solid #e0e0e0;
+            padding: 12px 16px;
+            margin: 8px 0;
+            border-radius: 12px;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            font-size: 14px;
+        }
+
+        .example-question:hover {
+            background: #f0f0f0;
+            border-color: #667eea;
+        }
+
+        .status {
+            padding: 10px 20px;
+            background: #e8f5e8;
+            border-left: 4px solid #4caf50;
+            margin: 10px 20px;
+            font-size: 14px;
+            color: #2e7d32;
+        }
+
+        @media (max-width: 768px) {
+            .container {
+                margin: 10px;
+                border-radius: 15px;
+            }
+
+            .header h1 {
+                font-size: 1.8em;
+            }
+
+            .chat-container {
+                height: 400px;
+            }
+
+            .message-content {
+                max-width: 90%;
+                font-size: 14px;
+            }
+
+            .examples {
+                max-height: 150px;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="header">
+            <h1>Bot Consulta ANM</h1>
+            <p>Resolución 371 de 2024 - Plataforma de Control a la Producción</p>
+        </div>
+
+        <div class="status">
+            ✅ Conectado - Listo para responder tus consultas
+        </div>
+
+        <div class="chat-container" id="chatContainer">
+            <div class="message bot">
+                <div class="message-content">
+                    ¡Hola! Soy tu asistente especializado en la Resolución 371 de 2024 de la Agencia Nacional de Minería. 
+                    <br><br>
+                    Puedo ayudarte con información sobre:
+                    <br><br>
+                    • <strong>Cronogramas de implementación</strong> por tipo de minería<br>
+                    • <strong>Formatos de registro obligatorios</strong> y periodicidad<br>
+                    • <strong>Componentes tecnológicos</strong> (Formulario Web, Servicios Web)<br>
+                    • <strong>Sanciones</strong> por incumplimiento<br>
+                    • <strong>Definiciones técnicas</strong> de la resolución<br>
+                    • <strong>Obligaciones específicas</strong> según clasificación minera<br>
+                    <br>
+                    ¿Qué te gustaría saber sobre la resolución?
+                </div>
+            </div>
+        </div>
+
+        <div class="typing" id="typing">
+            El bot está escribiendo
+            <div class="typing-dots">
+                <span></span>
+                <span></span>
+                <span></span>
+            </div>
+        </div>
+
+        <div class="examples">
+            <h3>Preguntas frecuentes:</h3>
+            <div class="example-question" onclick="askExample('¿Cuáles son los cronogramas de implementación para cada tipo de minería?')">
+                ¿Cuáles son los cronogramas de implementación para cada tipo de minería?
+            </div>
+            <div class="example-question" onclick="askExample('¿Qué formatos de registro son obligatorios y con qué periodicidad?')">
+                ¿Qué formatos de registro son obligatorios y con qué periodicidad?
+            </div>
+            <div class="example-question" onclick="askExample('¿Cuándo deben reportar los proyectos de interés nacional?')">
+                ¿Cuándo deben reportar los proyectos de interés nacional?
+            </div>
+            <div class="example-question" onclick="askExample('¿Qué pasa si no cumplo con los reportes obligatorios?')">
+                ¿Qué pasa si no cumplo con los reportes obligatorios?
+            </div>
+            <div class="example-question" onclick="askExample('¿Qué es la Plataforma de Control a la Producción?')">
+                ¿Qué es la Plataforma de Control a la Producción?
+            </div>
+            <div class="example-question" onclick="askExample('¿Los beneficiarios de otras figuras qué deben reportar?')">
+                ¿Los beneficiarios de otras figuras qué deben reportar?
+            </div>
+        </div>
+
+        <div class="input-container">
+            <input 
+                type="text" 
+                class="input-field" 
+                id="questionInput" 
+                placeholder="Escribe tu pregunta sobre la Resolución 371/2024..."
+                onkeypress="handleKeyPress(event)"
+            >
+            <button class="send-button" onclick="askQuestion()" id="sendButton">
+                Enviar
+            </button>
+        </div>
+    </div>
+
+    <script>
+        const API_URL = '/api/chat';
+
+        function addMessage(content, isUser = false) {
+            const chatContainer = document.getElementById('chatContainer');
+            const messageDiv = document.createElement('div');
+            messageDiv.className = `message ${isUser ? 'user' : 'bot'}`;
+            
+            const contentDiv = document.createElement('div');
+            contentDiv.className = 'message-content';
+            contentDiv.innerHTML = content;
+            
+            messageDiv.appendChild(contentDiv);
+            chatContainer.appendChild(messageDiv);
+            
+            chatContainer.scrollTop = chatContainer.scrollHeight;
+        }
+
+        function showTyping() {
+            document.getElementById('typing').style.display = 'flex';
+            document.getElementById('chatContainer').scrollTop = document.getElementById('chatContainer').scrollHeight;
+        }
+
+        function hideTyping() {
+            document.getElementById('typing').style.display = 'none';
+        }
+
+        async function askQuestion() {
+            const input = document.getElementById('questionInput');
+            const button = document.getElementById('sendButton');
+            const question = input.value.trim();
+
+            if (!question) return;
+
+            // Añadir pregunta del usuario
+            addMessage(question, true);
+            
+            // Limpiar input y deshabilitar botón
+            input.value = '';
+            button.disabled = true;
+            button.textContent = 'Enviando...';
+            
+            // Mostrar indicador de escritura
+            showTyping();
+
+            try {
+                const response = await fetch(API_URL, {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                    },
+                    body: JSON.stringify({ question }),
+                });
+
+                const data = await response.json();
+
+                if (response.ok) {
+                    addMessage(data.answer);
+                } else {
+                    addMessage('❌ Error: ' + (data.error || 'No se pudo procesar la consulta'));
+                }
+            } catch (error) {
+                console.error('Error:', error);
+                addMessage('❌ Error de conexión. Verifica que el servidor esté funcionando y que tengas configurada la API key de OpenAI.');
+            } finally {
+                // Ocultar indicador y rehabilitar botón
+                hideTyping();
+                button.disabled = false;
+                button.textContent = 'Enviar';
+                input.focus();
+            }
+        }
+
+        function askExample(question) {
+            document.getElementById('questionInput').value = question;
+            askQuestion();
+        }
+
+        function handleKeyPress(event) {
+            if (event.key === 'Enter') {
+                askQuestion();
+            }
+        }
+
+        // Focus en el input al cargar
+        document.addEventListener('DOMContentLoaded', () => {
+            document.getElementById('questionInput').focus();
+        });
+    </script>
+</body>
+</html>
